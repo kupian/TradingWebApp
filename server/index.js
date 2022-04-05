@@ -1,7 +1,7 @@
 const app = require('express')();
 const PORT = 80;
 
-app.get("/", (req, res) => {
+app.get("/api", (req, res) => {
    res.send("Hello World");
 });
 
