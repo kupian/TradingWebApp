@@ -19,6 +19,7 @@ ReactDOM.render(
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
           <Route path="/test" element={<Test />} />
+          <Route path="/test2" element={<Test />} />
         </Route>
       </Routes>
     </Router>

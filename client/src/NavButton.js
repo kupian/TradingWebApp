@@ -1,9 +1,12 @@
 import React from 'react'
-import {Link} from 'react-router-dom'
 import "./NavButton.css"
+import Nav from "react-bootstrap/Nav";
+import { LinkContainer } from "react-router-bootstrap";
 
 export default function NavButton(props) {
   return (
-    <Link to={props.link} className="nav-button">{props.text}</Link>
+    <LinkContainer to={props.link}>
+      <Nav.Link>{props.text}</Nav.Link>
+    </LinkContainer>
   )
 }
