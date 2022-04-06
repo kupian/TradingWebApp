@@ -11,7 +11,7 @@ import {
 import Layout from './pages/Layout';
 import Home from './pages/Home';
 import Test from './pages/Test';
-import StockChart from './components/StockChart';
+import StockLookup from './pages/StockLookup';
 
 ReactDOM.render(
   <React.StrictMode>
@@ -19,7 +19,7 @@ ReactDOM.render(
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
-          <Route path="/chart" element={<StockChart />} />
+          <Route path="/lookup" element={<StockLookup />} />
           <Route path="/test2" element={<Test />} />
         </Route>
       </Routes>
