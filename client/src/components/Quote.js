@@ -3,23 +3,20 @@ import "./Quote.css";
 
 export default function Quote(props) {
 
-    const IEX_KEY = process.env.REACT_APP_IEX_KEY;
+
     const [price, setPrice] = useState();
 
-    async function getStockData(symbol) {
-        const url = `https://cloud.iexapis.com/stable/stock/${symbol}/quote?token=${IEX_KEY}`;
+    async function fetchPrice(symbol) {
+        const url = `/api/quote?symbol=${symbol}`;
         const response = await fetch(url);
         const data = await response.json();
         return data;
     }
 
     useEffect( () => {
-        if (props.symbol) {
-            console.log("MAKING REQUEST!!!!");
-            getStockData(props.symbol).then(data => {
-                setPrice(data.latestPrice);
-            });
-        }
+        fetchPrice(props.symbol).then(data => {
+            setPrice(data.price);
+        });
     }, [props.symbol]);
 
   return (

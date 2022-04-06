@@ -19,9 +19,9 @@ export default function Candlestick(props) {
         }
     });
 
-    // Get the stock data from the API
-    async function getStockData(symbol) {
-        const url = `https://cloud.iexapis.com/stable/stock/${symbol}/chart/10d?token=${IEX_KEY}`;
+
+    async function fetchData(symbol) {
+        const url = `/api/chart?symbol=${symbol}`;
         const response = await fetch(url);
         const data = await response.json();
         return data;
@@ -55,16 +55,18 @@ export default function Candlestick(props) {
     }
 
     function buildChart(symbol) {
-        getStockData(symbol).then(data => {
-            updateChart(data);
+        fetchData(symbol).then(data => {
+            updateChart(data["data"]);
+            console.log(data["data"]);
         });
     }
 
     useEffect(() => {
         if (props.symbol) {
-        console.log(props.symbol);
-        buildChart(props.symbol);
-    }}, [props.symbol])
+            console.log(props.symbol);
+            buildChart(props.symbol);
+        }
+    }, [props.symbol])
 
     return (
         <div>

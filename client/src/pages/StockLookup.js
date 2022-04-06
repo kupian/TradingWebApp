@@ -16,10 +16,7 @@ export default function StockChart(props) {
     // Get stock data when button pressed and update chart
     function handleDataClick() {
         setSymbol(symbolText);
-        setSymbolText("");
-        if (chartMode) setSelection (<Candlestick height="200" width="800" symbol={symbol} />)
-        else setSelection (<Quote symbol={symbol} />)
-        };
+    };
 
     function handleChange(event) {
         setSymbolText((event.target.value).toUpperCase());
@@ -44,6 +41,9 @@ export default function StockChart(props) {
 
     useEffect( () => {
         seth3Text(symbol);
+        if (chartMode) setSelection (<Candlestick height="200" width="800" symbol={symbol} />)
+        else setSelection (<Quote symbol={symbol} />)
+        setSymbolText("");
     }, [symbol]);
 
     return (
