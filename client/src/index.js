@@ -3,15 +3,11 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import reportWebVitals from './reportWebVitals';
-import {
-  Navbar,
-  Card
-} from './components';
+import App from './App';
 
 ReactDOM.render(
   <React.StrictMode>
-    <Navbar />
-    <Card />
+    <App />
   </React.StrictMode>,
   document.getElementById('root')
 );
