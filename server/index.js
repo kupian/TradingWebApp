@@ -2,7 +2,7 @@ const app = require('express')();
 const PORT = 80;
 
 app.get("/api", (req, res) => {
-   res.send("Hello World");
+   res.send(JSON.stringify( { "text": "UWU" }));
 });
 
 app.listen(
