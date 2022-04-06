@@ -32,7 +32,7 @@ app.get("/api/quote", (req, res) => {
         }
     } catch (error) {
         console.log(error);
-        res.send(500);
+        res.status(500);
     }
 });
 
@@ -46,7 +46,7 @@ app.get("/api/chart", (req, res) => {
         }
      } catch (error) {
             console.log(error);
-            res.send(500);
+            res.status(500);
         }
     });
 
