@@ -9,7 +9,7 @@ export default function NavbarComp() {
       <Navbar bg="light" expand="lg">
         <Nav>
           <NavButton text="Home" link="/" />
-          <NavButton text="Test" link="/test" />
+          <NavButton text="Chart" link="/chart" />
           <NavButton text="Test2" link="/test2" />
         </Nav>
       </Navbar>
