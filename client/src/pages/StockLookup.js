@@ -1,4 +1,4 @@
-import { React, useState, useEffect, useRef } from 'react';
+import { React, useState, useEffect } from 'react';
 import Candlestick from "../components/Candlestick";
 import Quote from "../components/Quote";
 

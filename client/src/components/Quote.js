@@ -14,9 +14,11 @@ export default function Quote(props) {
     }
 
     useEffect( () => {
-        fetchPrice(props.symbol).then(data => {
-            setPrice(data.price);
-        });
+        if (props.symbol) {
+            fetchPrice(props.symbol).then(data => {
+                setPrice("$"+data.price);
+            });
+        }
     }, [props.symbol]);
 
   return (

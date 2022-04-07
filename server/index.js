@@ -1,10 +1,11 @@
-import dotenv from 'dotenv';
 import fetch from 'node-fetch';
 import express from 'express';
+import config from 'config';
 
-const dotenvconf = dotenv.config();
+const DEV_MODE = config["dev-mode"];
+const IEX_KEY = process.env.IEX_KEY;
+
 const app = express();
-const IEX_KEY = process.env.NODE_ENV_IEX_KEY;
 const PORT = 80;
 
 // Get the stock data from the API
@@ -23,32 +24,42 @@ async function getStockQuoteData(symbol) {
 }
 
 app.get("/api/quote", (req, res) => {
+    console.log("sss");
     try {
-        if (req.query.symbol) {
-            const symbol = req.query["symbol"];
-            getStockQuoteData(symbol).then(data => {
-                res.send({ "price": data.latestPrice });
-            })
+    
+        if (DEV_MODE) res.send({ "price": Math.floor(Math.random() * 100) });
+        else {
+            if (req.query.symbol) {
+                const symbol = req.query["symbol"];
+                getStockQuoteData(symbol).then(data => {
+                    res.send({ "price": data.latestPrice });
+                })
+            }
+        }
+    }
+    catch (error) {
+        console.log(error);
+        res.status(500);
+    }
+
+});
+
+app.get("/api/chart", (req, res) => {
+    try {
+        if (DEV_MODE) res.send({});
+        else {
+            if (req.query.symbol) {
+                const symbol = req.query["symbol"];
+                getStockChartData(symbol).then(data => {
+                    res.send({ "data": data });
+                })
+            }
         }
     } catch (error) {
         console.log(error);
         res.status(500);
     }
 });
-
-app.get("/api/chart", (req, res) => {
-    try {
-        if (req.query.symbol) {
-            const symbol = req.query["symbol"];
-            getStockChartData(symbol).then(data => {
-                res.send({ "data": data });
-            })
-        }
-     } catch (error) {
-            console.log(error);
-            res.status(500);
-        }
-    });
 
 app.listen(
     PORT,

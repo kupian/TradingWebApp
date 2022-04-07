@@ -6,7 +6,7 @@ import { LinkContainer } from "react-router-bootstrap";
 export default function NavButton(props) {
   return (
     <LinkContainer to={props.link}>
-      <Nav.Link>{props.text}</Nav.Link>
+      <Nav.Link className={props.class}>{props.text}</Nav.Link>
     </LinkContainer>
   )
 }
