@@ -49,15 +49,15 @@ export default function StockChart(props) {
     return (
         <div>
             <h1 className="display-1">Stock Lookup</h1>
-            <button id="quoteBtn" className={quoteClass} onClick={handleBtnClick}>Quote</button>
-            <button id="chartBtn" className={chartClass} onClick={handleBtnClick}>Chart</button>
+            <button id="quoteBtn" className={quoteClass} onClick={() => handleBtnClick()}>Quote</button>
+            <button id="chartBtn" className={chartClass} onClick={() => handleBtnClick()}>Chart</button>
             <div>
 
                 {selection}
                 
                 <h3>{h3Text}</h3>
                 <input type="text" value={symbolText} onChange={handleChange}/>
-                <button onClick={handleDataClick}>{buttonText}</button>
+                <button onClick={() => handleDataClick()}>{buttonText}</button>
             </div>
         </div>
 

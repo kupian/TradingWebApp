@@ -2,10 +2,10 @@ import { React, useState, useEffect } from 'react';
 import {Outlet} from 'react-router-dom';
 import Navigation from '../pages/Navigation';
 import "./Layout.css";
-//import config from 'config';
+import config from 'config';
 
 export default function Layout() {
-  const DEV_MODE = true;//config["dev-mode"];
+  const DEV_MODE = config["dev-mode"];
   const [username, setUsername] = useState("");
   let devMode;
   useEffect( () => {

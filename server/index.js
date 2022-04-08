@@ -14,8 +14,8 @@ const clientConfig = {
     password: "easypassword4321",
     database: "tradingapp"
 };
-//const DEV_MODE = config["dev-mode"];
-const IEX_KEY = process.env.IEX_KEY;
+const DEV_MODE = config["dev-mode"];
+const IEX_KEY = config["iex-key"];
 
 const app = express();
 const PORT = 80;
