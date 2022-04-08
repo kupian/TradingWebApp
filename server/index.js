@@ -1,7 +1,16 @@
 import fetch from 'node-fetch';
 import express from 'express';
 import config from 'config';
+import pg from 'pg';
 
+const Client = pg.Client;
+const client = new Client({
+    host: "spaceinaball.ddns.net",
+    user: "postgres",
+    port: 5432,
+    password: "easypassword4321",
+    database: "tradingapp"
+})
 const DEV_MODE = config["dev-mode"];
 const IEX_KEY = process.env.IEX_KEY;
 
@@ -24,9 +33,7 @@ async function getStockQuoteData(symbol) {
 }
 
 app.get("/api/quote", (req, res) => {
-    console.log("sss");
     try {
-    
         if (DEV_MODE) res.send({ "price": Math.floor(Math.random() * 100) });
         else {
             if (req.query.symbol) {
@@ -63,5 +70,7 @@ app.get("/api/chart", (req, res) => {
 
 app.listen(
     PORT,
-    () => console.log(`Server listening on http://localhost:${PORT}`)
+    () => {
+        console.log(`Server listening on http://localhost:${PORT}`);
+    }
 );
