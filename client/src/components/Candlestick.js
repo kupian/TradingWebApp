@@ -2,10 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Chart from 'react-apexcharts';
 
 export default function Candlestick(props) {
-
-
-    const IEX_KEY = process.env.REACT_APP_IEX_KEY;
-    const [symbol, setSymbol] = useState("");
+    
     const [series, setSeries] = useState([{
         data: []
     }
@@ -49,7 +46,7 @@ export default function Candlestick(props) {
         }
 
         setSeries([{
-            name: symbol,
+            name: props.symbol,
             data: data
         }]);
     }

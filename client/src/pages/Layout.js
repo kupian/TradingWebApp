@@ -1,6 +1,6 @@
 import { React, useState, useEffect } from 'react';
 import {Outlet} from 'react-router-dom';
-import NavbarComp from '../components/NavbarComp';
+import Navigation from '../components/Navigation';
 import "./Layout.css";
 import config from 'config';
 
@@ -17,7 +17,7 @@ export default function Layout() {
 
   return (
     <div>
-      <NavbarComp username={username}/>
+      <Navigation username={username}/>
       {devMode}
       <Outlet username={username}/>
     </div>

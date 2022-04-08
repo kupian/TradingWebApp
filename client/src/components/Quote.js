@@ -3,7 +3,6 @@ import "./Quote.css";
 
 export default function Quote(props) {
 
-
     const [price, setPrice] = useState();
 
     async function fetchPrice(symbol) {

@@ -1,7 +1,9 @@
 import { React, useState, useEffect } from 'react'
 import NavButton from './NavButton'
-import { Nav, NavLink, Navbar, NavDropdown, Modal, Button } from "react-bootstrap";
+import { NavLink, NavDropdown} from "react-bootstrap";
 import { LinkContainer } from 'react-router-bootstrap';
+import LoginModal from './LoginModal';
+import NavButtons from './NavButtons';
 
 export default function NavbarComp() {
   const [settings, setSettings] = useState();
@@ -65,35 +67,9 @@ export default function NavbarComp() {
   return (
     <>
       <div>
-        <Navbar bg="primary" variant="dark" expand="lg" sticky="top">
-          <Nav>
-            <NavButton text="Home" link="/" />
-            <NavButton text="Lookup" link="/lookup" />
-            <NavButton text="Test2" link="/test2" />
-          </Nav>
-          <Nav>
-            {settings}
-          </Nav>
-        </Navbar>
+      <NavButtons settings={settings} />
       </div>
-      <Modal show={modal} onHide={HideModal}>
-        <Modal.Header closeButton>
-          <Modal.Title>Login</Modal.Title>
-        </Modal.Header>
-
-        <Modal.Body>
-          <form>
-            <div className="form-group">
-              <label htmlFor="username">Username</label>
-              <input type="text" className="form-control" id="username" value={usernameText} onChange={HandleChange}/>
-            </div>
-          </form>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => HideModal()}>Close</Button>
-          <Button variant="primary" onClick={() => LogIn()}>Log In</Button>
-        </Modal.Footer>
-      </Modal>
+      <LoginModal modal={modal} LogIn={LogIn} HideModal={HideModal} ShowModal={ShowModal} HandleChange={HandleChange} usernameText={usernameText} />
     </>
   )
 }
