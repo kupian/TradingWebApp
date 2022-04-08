@@ -11,12 +11,11 @@ import {
 import Layout from './pages/Layout';
 import Home from './pages/Home';
 import Test from './pages/Test';
+import Profile from './pages/Profile';
 import StockLookup from './pages/StockLookup';
 import { Auth0Provider } from '@auth0/auth0-react';
 
 ReactDOM.render(
-
-
   <React.StrictMode>
     <Auth0Provider domain="dev-gke9ssjh.us.auth0.com" clientId='Y4J1Q08vPrHxhtjlmNjE7Mgppew8KdRW' redirectUri={window.location.origin}>
       <Router>
@@ -25,10 +24,10 @@ ReactDOM.render(
             <Route index element={<Home />} />
             <Route path="/lookup" element={<StockLookup />} />
             <Route path="/test2" element={<Test />} />
+            <Route path="/profile" element={<Profile />} />
           </Route>
         </Routes>
       </Router>
-
     </Auth0Provider>
   </React.StrictMode>,
   document.getElementById('root')

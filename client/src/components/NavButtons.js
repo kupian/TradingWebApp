@@ -6,24 +6,27 @@ import LoginButton from './LoginButton';
 import { useAuth0 } from "@auth0/auth0-react";
 
 export default function NavButtons(props) {
-    const isAuthenticated = useAuth0();
-    const [loginoutButton, setLoginoutButton] = useState();
+    const { isAuthenticated, isLoading } = useAuth0();
+    const [userButtons, setUserButtons] = useState();
 
     useEffect(() => {
-        console.log(isAuthenticated.isAuthenticated);
-        if (isAuthenticated.isAuthenticated) {
-            setLoginoutButton(<LogoutButton />);
+        if (isAuthenticated) {
+            setUserButtons(<>
+            <LogoutButton />
+            <NavButton text="Profile" link="/profile" />
+            <p className="ms-auto"></p>
+            </>);
         } else {
-            setLoginoutButton(<LoginButton />);
+            setUserButtons(<LoginButton />);
         }
-    }, [isAuthenticated.isAuthenticated]);
+    }, [isAuthenticated]);
 
   return (
     <Navbar bg="primary" variant="dark" expand="lg" sticky="top">
     <Nav>
       <NavButton text="Home" link="/" />
       <NavButton text="Lookup" link="/lookup" />
-      {loginoutButton}
+      {userButtons}
     </Nav>
   </Navbar>
   )
