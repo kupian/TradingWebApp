@@ -3,15 +3,16 @@ import { Nav, Navbar } from 'react-bootstrap';
 import NavButton from '../components/NavButton';
 import LogoutButton from '../components/LogoutButton';
 import LoginButton from '../components/LoginButton';
+import RoomDropdown from '../components/RoomDropdown';
 import { useAuth0 } from "@auth0/auth0-react";
 
 export default function NavButtons(props) {
 
   const { user, isAuthenticated, isLoading } = useAuth0();
   const [userButtons, setUserButtons] = useState();
+  const [userEmail, setUserEmail] = useState();
 
-  async function CheckForRegisteredUser(email)
-  {
+  async function GetUser(email) {
     const res = await fetch("/api/get-user", {
       method: "POST",
       headers: {
@@ -20,11 +21,10 @@ export default function NavButtons(props) {
       body: JSON.stringify({ email: email })
     })
     const data = await res.json();
-    return (data.length > 0) ? true : false;
-    };
+    return data;
+  };
 
-  async function RegisterNewUser(email)
-  {
+  async function RegisterNewUser(email) {
     const res = await fetch("/api/new-user", {
       method: "POST",
       headers: {
@@ -38,23 +38,28 @@ export default function NavButtons(props) {
 
   useEffect(() => {
     if (isAuthenticated) {
-      const email = user.email;
-      CheckForRegisteredUser(email).then(result => {
-        if (!result) {
-          console.log("registering " + email);
-          RegisterNewUser(email).then(result => console.log(result));
-        }
-      });
+      setUserEmail(user.email);
 
-      setUserButtons(<>
-        <LogoutButton />
-        <NavButton text="Profile" link="/profile" />
-        <p className="ms-auto"></p>
-      </>);
     } else {
       setUserButtons(<LoginButton />);
     }
   }, [isAuthenticated]);
+
+  useEffect(() => {
+    GetUser(userEmail).then(result => {
+      if (result.length === 0) {
+        console.log("registering " + userEmail);
+        RegisterNewUser(userEmail).then(result => console.log(result));
+      }
+    });
+
+    setUserButtons(<>
+      <RoomDropdown GetUser={GetUser} email={userEmail} />
+      <NavButton text="Profile" link="/profile" />
+      <p className="ms-auto"></p>
+      <LogoutButton />
+    </>);
+  }, [userEmail]);
 
   return (
     <Navbar bg="primary" variant="dark" expand="lg" sticky="top">

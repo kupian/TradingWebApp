@@ -97,10 +97,49 @@ app.post("/api/new-user", jsonparser, (req, res) => {
         if (email) {
             const client = new Client(clientConfig);
             client.connect();
-            client.query(`INSERT INTO accounts (email) VALUES ($1)`, [email]).then(response => {
+            client.query(`INSERT INTO accounts (email) VALUES ($1)`, [email]).then(data => {
                 client.end();
-                console.log(response);
-                res.send(response);
+                res.send(JSON.stringify(data.rows));
+            }).catch(error => {
+                console.log(error);
+                res.status(500).send(error);
+            });
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(500);
+    }
+})
+
+app.post("/api/get-players", jsonparser, (req, res) => {
+    try {
+        const email = req.body.email;
+        if (email) {
+            const client = new Client(clientConfig);
+            client.connect();
+            client.query(`SELECT * FROM players WHERE accountid = (SELECT id FROM accounts WHERE email = $1)`, [email]).then(data => {
+                client.end();
+                res.send(JSON.stringify(data.rows));
+            }).catch(error => {
+                console.log(error);
+                res.status(500).send(error);
+            });
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(500);
+    }
+})
+
+app.post("/api/get-lobby", jsonparser, (req, res) => {
+    try {
+        const code = req.body.code;
+        if (code) {
+            const client = new Client(clientConfig);
+            client.connect();
+            client.query(`SELECT * FROM lobbies WHERE code = $1`, [code]).then(data => {
+                client.end();
+                res.send(JSON.stringify(data.rows));
             }).catch(error => {
                 console.log(error);
                 res.status(500).send(error);
