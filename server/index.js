@@ -1,7 +1,18 @@
 import fetch from 'node-fetch';
 import express from 'express';
-import config from 'config';
+//import config from 'config';
 import pg from 'pg';
+//import {auth, requiresAuth} from 'express-openid-connect';
+
+/*const authInst = auth.auth;
+const authConfig = {
+    authRequired: false,
+    auth0Logout: true,
+    secret: "0b7d645567483c87f0e1211661e32a2d", //CHANGE THIS BEFORE PROD!!!!!!!!!
+    baseURL: "http://localhost:80",
+    clientID: "Y4J1Q08vPrHxhtjlmNjE7Mgppew8KdRW",
+    issuerBaseURL: "https://dev-gke9ssjh.us.auth0.com",
+};*/
 
 const Client = pg.Client;
 const client = new Client({
@@ -11,7 +22,7 @@ const client = new Client({
     password: "easypassword4321",
     database: "tradingapp"
 })
-const DEV_MODE = config["dev-mode"];
+//const DEV_MODE = config["dev-mode"];
 const IEX_KEY = process.env.IEX_KEY;
 
 const app = express();
@@ -68,9 +79,19 @@ app.get("/api/chart", (req, res) => {
     }
 });
 
+/*app.get("/", (req, res) => {
+    res.send(req.oidc.isAuthenticated() ? "Logged in" : "Logged out");
+})*/
+
+/*app.get('/profile', requiresAuth(), (req, res) => {
+    res.send(JSON.stringify(req.oidc.user));
+  });*/
+
 app.listen(
     PORT,
     () => {
         console.log(`Server listening on http://localhost:${PORT}`);
     }
 );
+
+//app.use(authInst(authConfig));

@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import reportWebVitals from './reportWebVitals';
-import { 
+import {
   BrowserRouter as Router,
   Routes,
   Route
@@ -12,18 +12,24 @@ import Layout from './pages/Layout';
 import Home from './pages/Home';
 import Test from './pages/Test';
 import StockLookup from './pages/StockLookup';
+import { Auth0Provider } from '@auth0/auth0-react';
 
 ReactDOM.render(
+
+
   <React.StrictMode>
-    <Router>
-      <Routes>
-        <Route path="/" element={<Layout />}>
-          <Route index element={<Home />} />
-          <Route path="/lookup" element={<StockLookup />} />
-          <Route path="/test2" element={<Test />} />
-        </Route>
-      </Routes>
-    </Router>
+    <Auth0Provider domain="dev-gke9ssjh.us.auth0.com" clientId='Y4J1Q08vPrHxhtjlmNjE7Mgppew8KdRW' redirectUri={window.location.origin}>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Layout />}>
+            <Route index element={<Home />} />
+            <Route path="/lookup" element={<StockLookup />} />
+            <Route path="/test2" element={<Test />} />
+          </Route>
+        </Routes>
+      </Router>
+
+    </Auth0Provider>
   </React.StrictMode>,
   document.getElementById('root')
 );

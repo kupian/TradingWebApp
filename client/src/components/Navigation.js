@@ -4,6 +4,7 @@ import { NavLink, NavDropdown} from "react-bootstrap";
 import { LinkContainer } from 'react-router-bootstrap';
 import LoginModal from './LoginModal';
 import NavButtons from './NavButtons';
+import LogoutButton from './LogoutButton';
 
 export default function NavbarComp() {
   const [settings, setSettings] = useState();

@@ -1,6 +1,7 @@
 import React from 'react'
 import {Nav, Navbar} from 'react-bootstrap';
 import NavButton from './NavButton';
+import LogoutButton from './LogoutButton';
 
 export default function NavButtons(props) {
   return (
@@ -8,7 +9,7 @@ export default function NavButtons(props) {
     <Nav>
       <NavButton text="Home" link="/" />
       <NavButton text="Lookup" link="/lookup" />
-      <NavButton text="Test2" link="/test2" />
+      <LogoutButton />
     </Nav>
     <Nav>
       {props.settings}

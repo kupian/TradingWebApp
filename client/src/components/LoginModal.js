@@ -1,5 +1,6 @@
 import React from 'react'
 import {Modal, Button} from 'react-bootstrap';
+import LoginButton from './LoginButton';
 
 export default function LoginModal(props) {
     return (
@@ -18,7 +19,7 @@ export default function LoginModal(props) {
             </Modal.Body>
             <Modal.Footer>
                 <Button variant="secondary" onClick={props.HideModal}>Close</Button>
-                <Button variant="primary" onClick={props.LogIn}>Log In</Button>
+                <LoginButton />
             </Modal.Footer>
         </Modal>
     )
