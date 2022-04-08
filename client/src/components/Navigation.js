@@ -70,7 +70,6 @@ export default function NavbarComp() {
       <div>
       <NavButtons settings={settings} />
       </div>
-      <LoginModal modal={modal} LogIn={LogIn} HideModal={HideModal} ShowModal={ShowModal} HandleChange={HandleChange} usernameText={usernameText} />
     </>
   )
 }
