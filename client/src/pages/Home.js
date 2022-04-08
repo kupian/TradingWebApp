@@ -5,7 +5,7 @@ import Leaderboard from '../components/Leaderboard'
 import Portfolio from '../components/Portfolio'
 import ChatFeed from '../components/ChatFeed'
 
-const messageList = ["hello","banana is good today","apple is shit"]
+
 
 export default function test() {
   return (
@@ -39,7 +39,7 @@ export default function test() {
           <Card>
             <Card.Body>
               <Card.Title>Chat Feed</Card.Title>
-              <ChatFeed messages={messageList} />
+              <ChatFeed />
             </Card.Body>
           </Card>
         </Col>
