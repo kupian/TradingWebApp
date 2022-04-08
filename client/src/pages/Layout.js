@@ -1,6 +1,6 @@
 import { React, useState, useEffect } from 'react';
 import {Outlet} from 'react-router-dom';
-import Navigation from '../components/Navigation';
+import Navigation from '../pages/Navigation';
 import "./Layout.css";
 //import config from 'config';
 
@@ -17,9 +17,9 @@ export default function Layout() {
 
   return (
     <div>
-      <Navigation username={username}/>
+      <Navigation />
       {devMode}
-      <Outlet username={username}/>
+      <Outlet/>
     </div>
   )
 }

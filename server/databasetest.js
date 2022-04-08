@@ -1,20 +1,13 @@
-import pg from 'pg';
+import fetch from 'node-fetch';
 
-const Client = pg.Client;
-const client = new Client({
-    host: "spaceinaball.ddns.net",
-    user: "postgres",
-    port: 5432,
-    password: "easypassword4321",
-    database: "tradingapp"});
-
-client.connect();
-client.query(`SELECT * FROM accounts`, (err, res) => {
-    if (!err) {
-        console.log(res.rows);
-    }
-    else {
-        console.log(err.message);
-    }
-    client.end;
-});
+fetch("http://localhost:80/api/get-user", {
+    method: "POST",
+    headers: {
+      'Content-Type': "application/json"
+    },
+    body: JSON.stringify({email: "hello"})
+  })
+  .then(response => response.json())
+  .then(data => {
+    console.log(data);
+  });

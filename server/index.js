@@ -1,27 +1,19 @@
 import fetch from 'node-fetch';
 import express from 'express';
-//import config from 'config';
+import config from 'config';
 import pg from 'pg';
-//import {auth, requiresAuth} from 'express-openid-connect';
+import bodyParser from 'body-parser';
 
-/*const authInst = auth.auth;
-const authConfig = {
-    authRequired: false,
-    auth0Logout: true,
-    secret: "0b7d645567483c87f0e1211661e32a2d", //CHANGE THIS BEFORE PROD!!!!!!!!!
-    baseURL: "http://localhost:80",
-    clientID: "Y4J1Q08vPrHxhtjlmNjE7Mgppew8KdRW",
-    issuerBaseURL: "https://dev-gke9ssjh.us.auth0.com",
-};*/
+const jsonparser = bodyParser.json();
 
 const Client = pg.Client;
-const client = new Client({
+const clientConfig = {
     host: "spaceinaball.ddns.net",
     user: "postgres",
     port: 5432,
     password: "easypassword4321",
     database: "tradingapp"
-})
+};
 //const DEV_MODE = config["dev-mode"];
 const IEX_KEY = process.env.IEX_KEY;
 
@@ -79,13 +71,46 @@ app.get("/api/chart", (req, res) => {
     }
 });
 
-/*app.get("/", (req, res) => {
-    res.send(req.oidc.isAuthenticated() ? "Logged in" : "Logged out");
-})*/
+app.post("/api/get-user", jsonparser, (req, res) => {
+    try {
+        const email = req.body.email;
+        if (email) {
+            const client = new Client(clientConfig);
+            client.connect();
+            client.query(`SELECT * FROM accounts WHERE email = $1`, [email]).then(data => {
+                client.end();
+                res.send(JSON.stringify(data.rows));
+            }).catch(error => {
+                console.log(error);
+                res.status(500).send(error);
+            });
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(500);
+    }
+})
 
-/*app.get('/profile', requiresAuth(), (req, res) => {
-    res.send(JSON.stringify(req.oidc.user));
-  });*/
+app.post("/api/new-user", jsonparser, (req, res) => {
+    try {
+        const email = req.body.email;
+        if (email) {
+            const client = new Client(clientConfig);
+            client.connect();
+            client.query(`INSERT INTO accounts (email) VALUES ($1)`, [email]).then(response => {
+                client.end();
+                console.log(response);
+                res.send(response);
+            }).catch(error => {
+                console.log(error);
+                res.status(500).send(error);
+            });
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(500);
+    }
+})
 
 app.listen(
     PORT,
@@ -93,5 +118,3 @@ app.listen(
         console.log(`Server listening on http://localhost:${PORT}`);
     }
 );
-
-//app.use(authInst(authConfig));
