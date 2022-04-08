@@ -46,19 +46,20 @@ export default function NavButtons(props) {
   }, [isAuthenticated]);
 
   useEffect(() => {
-    GetUser(userEmail).then(result => {
-      if (result.length === 0) {
-        console.log("registering " + userEmail);
-        RegisterNewUser(userEmail).then(result => console.log(result));
-      }
-    });
+    if (userEmail) {
+      GetUser(userEmail).then(result => {
+        if (result.length === 0) {
+          RegisterNewUser(userEmail).then(result => console.log(result));
+        }
+      });
 
-    setUserButtons(<>
-      <RoomDropdown GetUser={GetUser} email={userEmail} />
-      <NavButton text="Profile" link="/profile" />
-      <p className="ms-auto"></p>
-      <LogoutButton />
-    </>);
+      setUserButtons(<>
+        <RoomDropdown GetUser={GetUser} email={userEmail} />
+        <NavButton text="Profile" link="/profile" />
+        <p className="ms-auto"></p>
+        <LogoutButton />
+      </>);
+    }
   }, [userEmail]);
 
   return (
