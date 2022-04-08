@@ -5,6 +5,8 @@ import Leaderboard from '../components/Leaderboard'
 import Portfolio from '../components/Portfolio'
 import ChatFeed from '../components/ChatFeed'
 
+const messageList = ["hello","banana is good today","apple is shit"]
+
 export default function test() {
   return (
     <Container>
@@ -12,6 +14,7 @@ export default function test() {
         <Col>
           <Card>
             <Card.Body>
+              <Card.Title>Leaderboard</Card.Title>
               <Leaderboard />
             </Card.Body>
           </Card>
@@ -35,7 +38,8 @@ export default function test() {
         <Col>
           <Card>
             <Card.Body>
-              <ChatFeed />
+              <Card.Title>Chat Feed</Card.Title>
+              <ChatFeed messages={messageList} />
             </Card.Body>
           </Card>
         </Col>
