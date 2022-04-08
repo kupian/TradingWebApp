@@ -5,7 +5,7 @@ import { Form, Button, Stack, Row, Col, FormControl } from 'react-bootstrap'
 export default function ChatFeed() {
 
   // A placeholder - needs another database table to store the chat messages and all that jazz
-  const messages = ["hello", "banana is good today", "apple is shit", "BUY CUMCOIN"]
+  const messages = [{sender:"pussy-slayer-9000", body: "hello"}, {sender:"urmum2003", body: "banana is good today"}, {sender:"cooldude901", body: "apple is shit"}, {sender:"xdkid21", body: "BUY CUMCOIN"}]
 
 
   messages.map(message => {
@@ -17,7 +17,7 @@ export default function ChatFeed() {
       <Row>
         {messages.map((message, i) => {
           return (
-            <div key={i} className="bg-light border ms-auto">{message}</div>
+            <div key={i} className="bg-light border ms-auto"><strong>{message.sender}: </strong>{message.body}</div>
           )
         })}
       </Row>
