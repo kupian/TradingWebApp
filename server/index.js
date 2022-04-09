@@ -28,6 +28,7 @@ async function getStockChartData(symbol) {
     return data;
 }
 
+// Get the stock data from the API
 async function getStockQuoteData(symbol) {
     const url = `https://cloud.iexapis.com/stable/stock/${symbol}/quote?token=${IEX_KEY}`;
     const response = await fetch(url);
