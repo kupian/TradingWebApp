@@ -1,8 +1,8 @@
-import React from 'react'
-import { useAuth0 } from '@auth0/auth0-react';
+import { React } from 'react'
+import { useOutletContext } from "react-router-dom";
 
 export default function Profile() {
-    const { user, isAuthenticated, isLoading } = [props.user, props.isAuthenticated, props.isLoading];
+  const [GetUser, GetPlayers, lobbyCode, user, isAuthenticated, isLoading] = useOutletContext();
 
     if (isLoading) return (<div>Loading...</div>);
 

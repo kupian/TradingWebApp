@@ -36,6 +36,16 @@ async function getStockQuoteData(symbol) {
     return data;
 }
 
+// Get data of last cached stock quote
+async function getLastUpdate(symbol) {
+    const client = new Client(clientConfig);
+    await client.connect();
+    client.query(`SELECT lastUpdate FROM stocks WHERE symbol = $1`, [symbol]).then(result => {
+        client.end();
+        return result.rows[0];
+    });
+};
+
 app.get("/api/quote", (req, res) => {
     try {
         if (DEV_MODE) res.send({ "price": Math.floor(Math.random() * 100) });
@@ -72,7 +82,7 @@ app.get("/api/chart", (req, res) => {
     }
 });
 
-app.post("/api/get-user", jsonparser, (req, res) => {
+app.post("/api/get-user", jsonparser, (req, res,) => {
     try {
         const email = req.body.email;
         if (email) {
@@ -131,6 +141,7 @@ app.post("/api/get-players", jsonparser, (req, res) => {
         res.status(500);
     }
 })
+
 
 app.post("/api/get-lobby", jsonparser, (req, res) => {
     try {

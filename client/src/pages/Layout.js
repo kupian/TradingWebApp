@@ -13,11 +13,47 @@ export default function Layout() {
 
   if (DEV_MODE) { devMode = <p id='dev-mode'>DEV MODE IS ACTIVE, ALL DATA IS FAKE</p>; }
 
+  async function GetUser(email) {
+    const res = await fetch("/api/get-user", {
+      method: "POST",
+      headers: {
+        'Content-Type': "application/json"
+      },
+      body: JSON.stringify({ email: email })
+    })
+    const data = await res.json();
+    return data;
+  };
+
+  async function GetPlayers(email) {
+    const res = await fetch("/api/get-players", {
+        method: "POST",
+        headers: {
+            'Content-Type': "application/json"
+        },
+        body: JSON.stringify({ email: email })
+    })
+    const data = await res.json();
+    return data;
+}
+
+  // Set lobby code when user changes
+  useEffect(() => {
+    if (isAuthenticated) {
+      GetUser(user.email).then(result => {
+        if (result.length > 0) {
+          setLobbyCode(result[0].lobby);
+        }
+      });
+    }
+  }, [user]);
+
+
   return (
     <div>
-      <Navigation />
+      <Navigation GetUser={GetUser} GetPlayers={GetPlayers} lobbyCode={lobbyCode} user={user} isAuthenticated={isAuthenticated} isLoading={isLoading} />
       {devMode}
-      <Outlet/>
+      <Outlet context={[GetUser, GetPlayers, lobbyCode, user, isAuthenticated, isLoading]} />
     </div>
   )
 }

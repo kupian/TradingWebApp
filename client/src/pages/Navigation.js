@@ -4,26 +4,10 @@ import NavButton from '../components/NavButton';
 import LogoutButton from '../components/LogoutButton';
 import LoginButton from '../components/LoginButton';
 import RoomDropdown from '../components/RoomDropdown';
-import { useAuth0 } from "@auth0/auth0-react";
 
-export default function NavButtons(props) {
+export default function Navigation(props) {
 
-  const { user, isAuthenticated, isLoading } = useAuth0();
-  const [userButtons, setUserButtons] = useState();
-  const [userEmail, setUserEmail] = useState();
-
-  async function GetUser(email) {
-    const res = await fetch("/api/get-user", {
-      method: "POST",
-      headers: {
-        'Content-Type': "application/json"
-      },
-      body: JSON.stringify({ email: email })
-    })
-    const data = await res.json();
-    return data;
-  };
-
+  // Register new user to db
   async function RegisterNewUser(email) {
     const res = await fetch("/api/new-user", {
       method: "POST",
@@ -36,39 +20,40 @@ export default function NavButtons(props) {
     return data;
   }
 
+  // Set user buttons based on user login state
   useEffect(() => {
-    if (isAuthenticated) {
-      setUserEmail(user.email);
-
-    } else {
-      setUserButtons(<LoginButton />);
-    }
-  }, [isAuthenticated]);
-
-  useEffect(() => {
-    if (userEmail) {
-      GetUser(userEmail).then(result => {
+    if (props.isAuthenticated) {
+      // Register user to db if not already
+      props.GetUser(props.user.email).then(result => {
         if (result.length === 0) {
-          RegisterNewUser(userEmail).then(result => console.log(result));
+          RegisterNewUser(props.user.email).then(result => console.log(result));
         }
       });
-
-      setUserButtons(<>
-        <RoomDropdown GetUser={GetUser} email={userEmail} />
-        <NavButton text="Profile" link="/profile" />
-        <p className="ms-auto"></p>
-        <LogoutButton />
-      </>);
     }
-  }, [userEmail]);
+  }, [props.user]);
 
-  return (
-    <Navbar bg="primary" variant="dark" expand="lg" sticky="top">
-      <Nav>
-        <NavButton text="Home" link="/" />
-        <NavButton text="Lookup" link="/lookup" />
-        {userButtons}
-      </Nav>
-    </Navbar>
-  )
+  if (props.isAuthenticated) {
+    return (
+      <Navbar bg="primary" variant="dark" expand="lg" sticky="top">
+        <Nav>
+          <NavButton text="Home" link="/" />
+          <NavButton text="Lookup" link="/lookup" />
+          <RoomDropdown lobbyCode={props.lobbyCode} GetUser={props.GetUser} GetPlayers={props.GetPlayers} user={props.user} />
+          <NavButton text="Profile" link="/profile" />
+          <p className="ms-auto"></p>
+          <LogoutButton />
+        </Nav>
+      </Navbar>);
+  }
+  else {
+    return (
+      <Navbar bg="primary" variant="dark" expand="lg" sticky="top">
+        <Nav>
+          <NavButton text="Home" link="/" />
+          <NavButton text="Lookup" link="/lookup" />
+          <LoginButton />
+        </Nav>
+      </Navbar>);
+  }
 }
+
