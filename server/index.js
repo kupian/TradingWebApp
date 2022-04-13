@@ -73,7 +73,7 @@ async function updateStockCache(symbol, price) {
     client.query(`SELECT * FROM stocks WHERE symbol = $1`, [symbol]).then(result => {
         const t = new Date(Date.now()).toISOString();
         if (result.rows.length === 0) {
-            
+
             client.query(`INSERT INTO stocks (symbol, lastUpdate, lastPrice) VALUES ($1, $2, $3)`, [symbol, t, price], (err, result) => {
                 if (err) throw err
                 client.end();
@@ -88,6 +88,52 @@ async function updateStockCache(symbol, price) {
         }
     });
 };
+
+// Get a player name
+async function getPlayerName(accountID, lobbyCode, func) {
+    const client = new Client(clientConfig);
+    await client.connect();
+    client.query(`SELECT * FROM players WHERE accountid = $1 AND lobbycode = $2`, [accountID, lobbyCode]).then(result => {
+        client.end();
+        if (result.rows.length > 0) {
+            func(result.rows[0].name);
+        }
+        else {
+            func("No name");
+        }
+    });
+}
+
+// Get messages for lobby or player
+async function getMessages(lobbyCode, accountID, func) {
+    const client = new Client(clientConfig);
+    await client.connect();
+    if (accountID) {
+        client.query(`SELECT * FROM messages WHERE lobbycode = $1 AND accountid = $2`, [lobbyCode, accountID]).then(result => {
+            client.end();
+            func(result.rows);
+        });
+    }
+    else {
+        client.query(`SELECT * FROM messages WHERE lobbycode = $1`, [lobbyCode]).then(result => {
+            client.end();
+            func(result.rows);
+        });
+    }
+}
+
+// Message route for lobby or player
+app.post("/api/messages", jsonparser, (req, res) => {
+    const lobbyCode = req.body.lobbyCode;
+    let accountID = false;
+    if (req.body.accountID) {
+        accountID = req.body.accountID;
+    }
+    getMessages(lobbyCode, accountID, (messages) => {
+        res.send(messages)
+    });
+});
+
 
 // Get stock quote
 app.get("/api/quote", (req, res) => {
@@ -187,6 +233,17 @@ app.post("/api/new-user", jsonparser, (req, res) => {
         res.status(500);
     }
 })
+
+// Get a player name from their account ID and lobby code
+app.post("/api/get-player-name", jsonparser, (req, res) => {
+    const accountID = req.body.accountID;
+    const lobbyCode = req.body.lobbyCode;
+    console.log("Received request for player with id " + accountID + " in lobby " + lobbyCode);
+    getPlayerName(accountID, lobbyCode, (name) => {
+        console.log("Sending player " + name);
+        res.send({ "name" : name });
+    });
+});
 
 app.post("/api/get-players", jsonparser, (req, res) => {
     try {

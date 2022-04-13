@@ -4,10 +4,14 @@ import Watchlist from '../components/Watchlist'
 import Leaderboard from '../components/Leaderboard'
 import Portfolio from '../components/Portfolio'
 import ChatFeed from '../components/ChatFeed'
+import { useOutletContext } from 'react-router-dom'
 
 
 
-export default function test() {
+export default function Home(props) {
+
+  const [GetUser, GetPlayers, lobbyCode, user, isAuthenticated, isLoading] = useOutletContext();
+
   return (
     <Container>
       <Row>
@@ -39,7 +43,7 @@ export default function test() {
           <Card>
             <Card.Body>
               <Card.Title>Chat Feed</Card.Title>
-              <ChatFeed />
+              <ChatFeed lobbyCode={lobbyCode}/>
             </Card.Body>
           </Card>
         </Col>
