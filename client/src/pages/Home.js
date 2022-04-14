@@ -1,4 +1,4 @@
-import React from 'react'
+import { React, useEffect } from 'react'
 import {Row, Col, Card, Container} from 'react-bootstrap'
 import Watchlist from '../components/Watchlist'
 import Leaderboard from '../components/Leaderboard'
@@ -9,8 +9,6 @@ import { useOutletContext } from 'react-router-dom'
 
 
 export default function Home(props) {
-
-  const [GetUser, GetPlayers, lobbyCode, user, isAuthenticated, isLoading] = useOutletContext();
 
   return (
     <Container>
@@ -43,7 +41,7 @@ export default function Home(props) {
           <Card>
             <Card.Body>
               <Card.Title>Chat Feed</Card.Title>
-              <ChatFeed lobbyCode={lobbyCode}/>
+              <ChatFeed lobbyCode={props.lobbyCode} GetUser={props.GetUser} user={props.user} isAuthenticated={props.isAuthenticated} player={props.player}/>
             </Card.Body>
           </Card>
         </Col>
