@@ -105,11 +105,11 @@ async function getPlayerName(accountID, lobbyCode, func) {
 }
 
 // Get messages for lobby or player
-async function getMessages(lobbyCode, accountID, func) {
+async function getMessages(lobbyCode, player, func) {
     const client = new Client(clientConfig);
     await client.connect();
-    if (accountID) {
-        client.query(`SELECT * FROM messages WHERE lobbycode = $1 AND accountid = $2`, [lobbyCode, accountID]).then(result => {
+    if (player) {
+        client.query(`SELECT * FROM messages WHERE lobbycode = $1 AND player = $2`, [lobbyCode, player]).then(result => {
             client.end();
             func(result.rows);
         });
@@ -122,15 +122,34 @@ async function getMessages(lobbyCode, accountID, func) {
     }
 }
 
+async function newMessage(lobbyCode, player, message, func) {
+    const client = new Client(clientConfig);
+    await client.connect();
+    client.query(`INSERT INTO messages (lobbycode, player, message) VALUES ($1, $2, $3)`, [lobbyCode, player, message]).then(result => {
+        func(result);
+        client.end();
+    });
+}
+
 // Message route for lobby or player
 app.post("/api/messages", jsonparser, (req, res) => {
     const lobbyCode = req.body.lobbyCode;
-    let accountID = false;
-    if (req.body.accountID) {
-        accountID = req.body.accountID;
+    let player = false;
+    if (req.body.player) {
+        player = req.body.player;
     }
-    getMessages(lobbyCode, accountID, (messages) => {
+    getMessages(lobbyCode, player, (messages) => {
+        console.log(messages);
         res.send(messages)
+    });
+});
+
+app.post("/api/new-message", jsonparser, (req, res) => {
+    const lobbyCode = req.body.lobbyCode;
+    const player = req.body.player;
+    const message = req.body.message;
+    newMessage(lobbyCode, player, message, (result) => {
+        res.send(result);
     });
 });
 
@@ -241,7 +260,7 @@ app.post("/api/get-player-name", jsonparser, (req, res) => {
     console.log("Received request for player with id " + accountID + " in lobby " + lobbyCode);
     getPlayerName(accountID, lobbyCode, (name) => {
         console.log("Sending player " + name);
-        res.send({ "name" : name });
+        res.send({ "name": name });
     });
 });
 

@@ -1,12 +1,17 @@
 import { React, useState, useEffect } from 'react';
-import {Outlet} from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import Navigation from '../pages/Navigation';
 import "./Layout.css";
 import config from 'config';
 import { useAuth0 } from "@auth0/auth0-react";
+import Home from '../pages/Home';
+import Test from '../pages/Test';
+import Profile from '../pages/Profile';
+import StockLookup from '../pages/StockLookup';
 
 export default function Layout() {
   const { user, isAuthenticated, isLoading } = useAuth0();
+  const [player, setPlayer] = useState(null);
   const [lobbyCode, setLobbyCode] = useState("");
   const DEV_MODE = config["dev-mode"];
   let devMode;
@@ -27,15 +32,15 @@ export default function Layout() {
 
   async function GetPlayers(email) {
     const res = await fetch("/api/get-players", {
-        method: "POST",
-        headers: {
-            'Content-Type': "application/json"
-        },
-        body: JSON.stringify({ email: email })
+      method: "POST",
+      headers: {
+        'Content-Type': "application/json"
+      },
+      body: JSON.stringify({ email: email })
     })
     const data = await res.json();
     return data;
-}
+  }
 
   // Set lobby code when user changes
   useEffect(() => {
@@ -48,12 +53,29 @@ export default function Layout() {
     }
   }, [user]);
 
+  useEffect(() => {
+    if (isAuthenticated) {
+      GetPlayers(user.email).then(result => {
+        result.map(player => {
+          if (player.lobbycode === lobbyCode) {
+            setPlayer(player);
+          }
+        });
+      })
+    }
+  }, [lobbyCode]);
+
 
   return (
     <div>
-      <Navigation GetUser={GetUser} GetPlayers={GetPlayers} lobbyCode={lobbyCode} user={user} isAuthenticated={isAuthenticated} isLoading={isLoading} />
+      <Navigation GetUser={GetUser} GetPlayers={GetPlayers} lobbyCode={lobbyCode} user={user} isAuthenticated={isAuthenticated} isLoading={isLoading} player={player} />
       {devMode}
-      <Outlet context={[GetUser, GetPlayers, lobbyCode, user, isAuthenticated, isLoading]} />
+      <Routes>
+        <Route index element={<Home GetUser={GetUser} GetPlayers={GetPlayers} lobbyCode={lobbyCode} user={user} isAuthenticated={isAuthenticated} isLoading={isLoading} player={player} />} />
+        <Route path="/lookup" element={<StockLookup />} />
+        <Route path="/test2" element={<Test />} />
+        <Route path="/profile" element={<Profile />} />
+      </Routes>
     </div>
   )
 }

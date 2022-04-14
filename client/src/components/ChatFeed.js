@@ -5,6 +5,7 @@ import { Form, Button, Stack, Row, Col, FormControl } from 'react-bootstrap'
 export default function ChatFeed(props) {
 
   const [messageList, setMessageList] = useState([]);
+  const [msgBoxVal, setMsgBoxVal] = useState('Enter a message...');
 
   async function getMessages(lobbyCode) {
     const res = await fetch("/api/messages", {
@@ -15,39 +16,48 @@ export default function ChatFeed(props) {
       body: JSON.stringify({ lobbyCode: lobbyCode })
     });
     const messages = await res.json();
-    const messagesWithNames = await addPlayerNames(messages);
-    return messagesWithNames;
+    return messages;
   }
 
-  async function addPlayerNames(messages) {
-    for (let i = 0; i < messages.length; i++) {
-      getPlayerName(messages[i].accountid, messages[i].lobbycode).then(result => {
-        messages[i].playername = result;
-      });
-      return messages;
-    }
-  }
-
-  async function getPlayerName(accountID, lobbyCode) {
-    const res = await fetch("/api/get-player-name", {
+  async function newMessage(lobbyCode, player, message) {
+    const res = await fetch("/api/new-message", {
       method: "POST",
       headers: {
         'Content-Type': "application/json"
       },
-      body: JSON.stringify({
-        accountID: accountID,
-        lobbyCode: lobbyCode
-      })
+      body: JSON.stringify({ lobbyCode: lobbyCode, player: player, message: message })
     });
-    const data = await res.json();
-    return data.name;
+    return res
+  }
+
+  async function updateMessages(lobbyCode) {
+    getMessages(props.lobbyCode).then(messages => {
+      
+      setMessageList(messages);
+    });
+  }
+
+  function handleChange(e) {
+    setMsgBoxVal(e.target.value);
+  }
+
+  function handleClick(e) {
+    setMsgBoxVal("");
+  }
+
+  function handleSubmit() {
+    if (props.isAuthenticated) {
+      console.log(props.player.name)
+      newMessage(props.lobbyCode, props.player.name, msgBoxVal).then(res => {
+        setMsgBoxVal("Enter a message...");
+        updateMessages(props.lobbyCode);
+      });
+    }
   }
 
   useEffect(() => {
     if (props.lobbyCode) {
-      getMessages(props.lobbyCode).then(messages => {
-        if (messages) setMessageList(messages);
-      });
+      updateMessages(props.lobbyCode);
     }
   }, [props.lobbyCode]);
 
@@ -59,22 +69,23 @@ export default function ChatFeed(props) {
     <Stack>
       <Row>
         // This is the chat feed - needs to be populated with the messages from the database
-        {messageList.map((message, i) => {
-          console.log(message);
+        {messageList.map(message => {
           return (
             <Row key={message.id}>
               <div className="bg-light border ms-auto">
-                <strong>{message.playername}:</strong>{message.message}
+                <strong>{message.player}:</strong> {message.message}
               </div>
-            </Row>)
-        })}
+            </Row>
+          )
+        }
+        )}
       </Row>
       <Row>
         <Col>
-          <Form.Control type="text" placeholder="Type a message..." />
+          <Form.Control type="text" value={msgBoxVal} onClick={handleClick} onChange={handleChange} />
         </Col>
         <Col>
-          <Button variant="primary" type="submit">Submit</Button>
+          <Button variant="primary" type="submit" onClick={handleSubmit}>Submit</Button>
         </Col>
       </Row>
     </Stack>
