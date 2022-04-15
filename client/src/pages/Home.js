@@ -41,7 +41,7 @@ export default function Home(props) {
           <Card>
             <Card.Body>
               <Card.Title>Chat Feed</Card.Title>
-              <ChatFeed lobbyCode={props.lobbyCode} GetUser={props.GetUser} user={props.user} isAuthenticated={props.isAuthenticated} player={props.player}/>
+              <ChatFeed lobbyCode={props.lobbyCode} GetUser={props.GetUser} user={props.user} isAuthenticated={props.isAuthenticated} player={props.player} username={props.username}/>
             </Card.Body>
           </Card>
         </Col>

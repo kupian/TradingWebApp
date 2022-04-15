@@ -11,7 +11,8 @@ import StockLookup from '../pages/StockLookup';
 
 export default function Layout() {
   const { user, isAuthenticated, isLoading } = useAuth0();
-  const [player, setPlayer] = useState(null);
+  const [username, setUsername] = useState("");
+  const [player, setPlayer] = useState("");
   const [lobbyCode, setLobbyCode] = useState("");
   const DEV_MODE = config["dev-mode"];
   let devMode;
@@ -48,6 +49,7 @@ export default function Layout() {
       GetUser(user.email).then(result => {
         if (result.length > 0) {
           setLobbyCode(result[0].lobby);
+          setUsername(result[0].username);
         }
       });
     }
@@ -68,13 +70,13 @@ export default function Layout() {
 
   return (
     <div>
-    <Navigation GetUser={GetUser} GetPlayers={GetPlayers} lobbyCode={lobbyCode} setLobbyCode={setLobbyCode} user={user} isAuthenticated={isAuthenticated} isLoading={isLoading} player={player} />
+    <Navigation GetUser={GetUser} GetPlayers={GetPlayers} lobbyCode={lobbyCode} setLobbyCode={setLobbyCode} user={user} isAuthenticated={isAuthenticated} isLoading={isLoading} player={player} username={username} setUsername={setUsername}/>
       {devMode}
       <Routes>
-        <Route index element={<Home GetUser={GetUser} GetPlayers={GetPlayers} lobbyCode={lobbyCode} user={user} isAuthenticated={isAuthenticated} isLoading={isLoading} player={player} />} />
+        <Route index element={<Home GetUser={GetUser} GetPlayers={GetPlayers} lobbyCode={lobbyCode} user={user} isAuthenticated={isAuthenticated} isLoading={isLoading} player={player} username={username}/>} />
         <Route path="/lookup" element={<StockLookup />} />
         <Route path="/test2" element={<Test />} />
-        <Route path="/profile" element={<Profile user={user} isAuthenticated={isAuthenticated} isLoading={isLoading}/>} />
+        <Route path="/profile" element={<Profile user={user} isAuthenticated={isAuthenticated} isLoading={isLoading} username={username} setUsername={setUsername}/>} />
       </Routes>
     </div>
   )

@@ -4,7 +4,6 @@ import { NavDropdown, Modal, Button, Form } from 'react-bootstrap';
 export default function RoomDropdown(props) {
     const [latestLobby, setLatestLobby] = useState("Lobby Code...");
     const [joinCode, setJoinCode] = useState("");
-    const [nickName, setNickName] = useState("");
     const [show, setShow] = useState(false);
     const [otherLobbies, setOtherLobbies] = useState([
         <NavDropdown.Item key="1">No other lobbies. loner</NavDropdown.Item>]
@@ -44,7 +43,6 @@ export default function RoomDropdown(props) {
 
     function handleChange(e) {
         if (e.target.id === "code") setJoinCode(e.target.value);
-        if (e.target.id === "nick") setNickName(e.target.value);
     }
 
     async function handleSubmit() {
@@ -53,11 +51,10 @@ export default function RoomDropdown(props) {
             headers: {
                 'Content-Type': "application/json"
             },
-            body: JSON.stringify({ email: props.user.email, lobbyCode: joinCode, name: nickName })
+            body: JSON.stringify({ email: props.user.email, lobbyCode: joinCode })
         })
         props.setLobbyCode(joinCode);
         setJoinCode("");
-        setNickName("");
         setShow(false);
     }
 
@@ -107,11 +104,6 @@ export default function RoomDropdown(props) {
                         <Form.Group className="mb-3">
                             <Form.Label>Lobby Code</Form.Label>
                             <Form.Control id='code' value={joinCode} onChange={handleChange} type="text" placeholder="Enter lobby code" />
-                        </Form.Group>
-
-                        <Form.Group className="mb-3">
-                            <Form.Label>Nickname</Form.Label>
-                            <Form.Control id='nick' value={nickName} onChange={handleChange} type="text" placeholder="Enter a player nickname" />
                         </Form.Group>
                     </Form>
                 </Modal.Body>

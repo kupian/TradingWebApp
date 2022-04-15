@@ -1,5 +1,6 @@
 import { React, useState, useEffect } from 'react'
-import { Nav, Navbar } from 'react-bootstrap';
+import { Nav, Navbar, Container } from 'react-bootstrap';
+import LinkContainer from 'react-router-bootstrap/LinkContainer';
 import NavButton from '../components/NavButton';
 import LogoutButton from '../components/LogoutButton';
 import LoginButton from '../components/LoginButton';
@@ -8,13 +9,13 @@ import RoomDropdown from '../components/RoomDropdown';
 export default function Navigation(props) {
 
   // Register new user to db
-  async function RegisterNewUser(email) {
+  async function RegisterNewUser(email, username) {
     const res = await fetch("/api/new-user", {
       method: "POST",
       headers: {
         'Content-Type': "application/json"
       },
-      body: JSON.stringify({ email: email })
+      body: JSON.stringify({ email: email, username: username })
     })
     const data = await res.json();
     return data;
@@ -26,7 +27,10 @@ export default function Navigation(props) {
       // Register user to db if not already
       props.GetUser(props.user.email).then(result => {
         if (result.length === 0) {
-          RegisterNewUser(props.user.email).then(result => console.log(result));
+          RegisterNewUser(props.user.email, props.user.name).then(result => {
+            props.setUsername(props.user.name)
+          }
+          );
         }
       });
     }
@@ -35,12 +39,16 @@ export default function Navigation(props) {
   if (props.isAuthenticated) {
     return (
       <Navbar bg="primary" variant="dark" expand="lg" sticky="top">
-        <Nav>
+        <Nav className="container-fluid">
           <NavButton text="Home" link="/" />
           <NavButton text="Lookup" link="/lookup" />
           <RoomDropdown lobbyCode={props.lobbyCode} setLobbyCode={props.setLobbyCode} GetUser={props.GetUser} GetPlayers={props.GetPlayers} user={props.user} />
-          <NavButton text="Profile" link="/profile" />
-          <p className="ms-auto"></p>
+          <LinkContainer to="/profile">
+            <Navbar.Brand className="ms-auto">
+              {props.username}
+            </Navbar.Brand>
+          </LinkContainer>
+          <Navbar.Brand>Lobby Code: {props.lobbyCode}</Navbar.Brand>
           <LogoutButton />
         </Nav>
       </Navbar>);

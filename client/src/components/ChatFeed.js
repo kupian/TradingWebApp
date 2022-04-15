@@ -47,8 +47,7 @@ export default function ChatFeed(props) {
 
   function handleSubmit() {
     if (props.isAuthenticated) {
-      console.log(props.player.name)
-      newMessage(props.lobbyCode, props.player.name, msgBoxVal).then(res => {
+      newMessage(props.lobbyCode, props.username, msgBoxVal).then(res => {
         setMsgBoxVal("Enter a message...");
         updateMessages(props.lobbyCode);
       });

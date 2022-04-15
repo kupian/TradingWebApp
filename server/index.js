@@ -149,6 +149,30 @@ async function joinLobby(lobbyCode, email, name, func) {
 });
 }
 
+async function updateUserName(email, username, func) {
+    const client = new Client(clientConfig);
+    await client.connect();
+    client.query(`SELECT * FROM accounts WHERE username = $1`, [username]).then(result => {
+        if (result.rows.length > 0) {
+            func(false);
+        }
+        else {
+            client.query(`UPDATE accounts SET username = $1 WHERE email = $2`, [username, email]).then(result => {
+                client.end();
+                func(true);
+            });
+        }
+    });
+}
+
+app.post("/api/update-username", jsonparser, (req, res) => {
+    const email = req.body.email;
+    const username = req.body.username;
+    updateUserName(email, username, result => {
+        res.send({allowed: result});
+    });
+})
+
 app.post("/api/change-lobby", jsonparser, (req, res) => {
     const lobbyCode = req.body.lobbyCode;
     const email = req.body.email;
@@ -270,10 +294,11 @@ app.post("/api/get-user", jsonparser, (req, res,) => {
 app.post("/api/new-user", jsonparser, (req, res) => {
     try {
         const email = req.body.email;
+        const username = req.body.username;
         if (email) {
             const client = new Client(clientConfig);
             client.connect();
-            client.query(`INSERT INTO accounts (email) VALUES ($1)`, [email]).then(data => {
+            client.query(`INSERT INTO accounts (email, username) VALUES ($1, $2)`, [email, username]).then(data => {
                 client.end();
                 res.send(JSON.stringify(data.rows));
             }).catch(error => {
