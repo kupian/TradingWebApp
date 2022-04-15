@@ -38,7 +38,7 @@ export default function Navigation(props) {
         <Nav>
           <NavButton text="Home" link="/" />
           <NavButton text="Lookup" link="/lookup" />
-          <RoomDropdown lobbyCode={props.lobbyCode} GetUser={props.GetUser} GetPlayers={props.GetPlayers} user={props.user} />
+          <RoomDropdown lobbyCode={props.lobbyCode} setLobbyCode={props.setLobbyCode} GetUser={props.GetUser} GetPlayers={props.GetPlayers} user={props.user} />
           <NavButton text="Profile" link="/profile" />
           <p className="ms-auto"></p>
           <LogoutButton />

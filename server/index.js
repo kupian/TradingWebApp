@@ -90,10 +90,10 @@ async function updateStockCache(symbol, price) {
 };
 
 // Get a player name
-async function getPlayerName(accountID, lobbyCode, func) {
+async function getPlayerName(email, lobbyCode, func) {
     const client = new Client(clientConfig);
     await client.connect();
-    client.query(`SELECT * FROM players WHERE accountid = $1 AND lobbycode = $2`, [accountID, lobbyCode]).then(result => {
+    client.query(`SELECT * FROM players WHERE accountemail = $1 AND lobbycode = $2`, [email, lobbyCode]).then(result => {
         client.end();
         if (result.rows.length > 0) {
             func(result.rows[0].name);
@@ -131,6 +131,41 @@ async function newMessage(lobbyCode, player, message, func) {
     });
 }
 
+async function changeLobby(lobbyCode, email, func) {
+    const client = new Client(clientConfig);
+    await client.connect();
+    client.query(`UPDATE accounts SET lobby = $1 WHERE email = $2`, [lobbyCode, email]).then(result => {
+        client.end();
+        func(result);
+});
+}
+
+async function joinLobby(lobbyCode, email, name, func) {
+    const client = new Client(clientConfig);
+    await client.connect();
+    client.query(`INSERT INTO players (accountemail, lobbycode, name) VALUES ($1, $2, $3)`, [email, lobbyCode, name]).then(result => {
+        client.end();
+        func(result);
+});
+}
+
+app.post("/api/change-lobby", jsonparser, (req, res) => {
+    const lobbyCode = req.body.lobbyCode;
+    const email = req.body.email;
+    changeLobby(lobbyCode, email, result => {
+        res.send(result);
+    });
+})
+
+app.post("/api/join-lobby", jsonparser, (req, res) => {
+    const lobbyCode = req.body.lobbyCode;
+    const name = req.body.name;
+    const email = req.body.email;
+    joinLobby(lobbyCode, email, name, result => {
+        res.send(result);
+    });
+})
+
 // Message route for lobby or player
 app.post("/api/messages", jsonparser, (req, res) => {
     const lobbyCode = req.body.lobbyCode;
@@ -139,7 +174,6 @@ app.post("/api/messages", jsonparser, (req, res) => {
         player = req.body.player;
     }
     getMessages(lobbyCode, player, (messages) => {
-        console.log(messages);
         res.send(messages)
     });
 });
@@ -253,12 +287,11 @@ app.post("/api/new-user", jsonparser, (req, res) => {
     }
 })
 
-// Get a player name from their account ID and lobby code
+// Get a player name from their account email and lobby code
 app.post("/api/get-player-name", jsonparser, (req, res) => {
-    const accountID = req.body.accountID;
+    const email = req.body.email;
     const lobbyCode = req.body.lobbyCode;
-    console.log("Received request for player with id " + accountID + " in lobby " + lobbyCode);
-    getPlayerName(accountID, lobbyCode, (name) => {
+    getPlayerName(email, lobbyCode, (name) => {
         console.log("Sending player " + name);
         res.send({ "name": name });
     });
@@ -270,7 +303,7 @@ app.post("/api/get-players", jsonparser, (req, res) => {
         if (email) {
             const client = new Client(clientConfig);
             client.connect();
-            client.query(`SELECT * FROM players WHERE accountid = (SELECT id FROM accounts WHERE email = $1)`, [email]).then(data => {
+            client.query(`SELECT * FROM players WHERE accountemail = $1`, [email]).then(data => {
                 client.end();
                 res.send(JSON.stringify(data.rows));
             }).catch(error => {

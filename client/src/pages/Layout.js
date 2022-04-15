@@ -68,13 +68,13 @@ export default function Layout() {
 
   return (
     <div>
-      <Navigation GetUser={GetUser} GetPlayers={GetPlayers} lobbyCode={lobbyCode} user={user} isAuthenticated={isAuthenticated} isLoading={isLoading} player={player} />
+    <Navigation GetUser={GetUser} GetPlayers={GetPlayers} lobbyCode={lobbyCode} setLobbyCode={setLobbyCode} user={user} isAuthenticated={isAuthenticated} isLoading={isLoading} player={player} />
       {devMode}
       <Routes>
         <Route index element={<Home GetUser={GetUser} GetPlayers={GetPlayers} lobbyCode={lobbyCode} user={user} isAuthenticated={isAuthenticated} isLoading={isLoading} player={player} />} />
         <Route path="/lookup" element={<StockLookup />} />
         <Route path="/test2" element={<Test />} />
-        <Route path="/profile" element={<Profile />} />
+        <Route path="/profile" element={<Profile user={user} isAuthenticated={isAuthenticated} isLoading={isLoading}/>} />
       </Routes>
     </div>
   )

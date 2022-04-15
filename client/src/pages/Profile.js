@@ -1,18 +1,16 @@
 import { React } from 'react'
-import { useOutletContext } from "react-router-dom";
 
-export default function Profile() {
-  const [GetUser, GetPlayers, lobbyCode, user, isAuthenticated, isLoading] = useOutletContext();
+export default function Profile(props) {
 
-    if (isLoading) return (<div>Loading...</div>);
+    if (props.isLoading) return (<div>Loading...</div>);
 
-    if (!isAuthenticated) return (<div>You are not logged in.</div>);
+    if (!(props.isAuthenticated)) return (<div>You are not logged in.</div>);
 
   return (
     <div>
-        <img src={user.picture} alt={user.name} />
-        <h2>{user.name}</h2>
-        <p>{user.email}</p>
+        <img src={props.user.picture} alt={props.user.name} />
+        <h2>{props.user.name}</h2>
+        <p>{props.user.email}</p>
     </div>
   )
 }
