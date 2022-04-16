@@ -10,8 +10,8 @@ import Profile from '../pages/Profile';
 import StockLookup from '../pages/StockLookup';
 
 export default function Layout() {
-  const { user, isAuthenticated, isLoading } = useAuth0();
-  const [username, setUsername] = useState("");
+  const [user, setUser] = useState({});
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [player, setPlayer] = useState("");
   const [lobbyCode, setLobbyCode] = useState("");
   const DEV_MODE = config["dev-mode"];
@@ -19,13 +19,13 @@ export default function Layout() {
 
   if (DEV_MODE) { devMode = <p id='dev-mode'>DEV MODE IS ACTIVE, ALL DATA IS FAKE</p>; }
 
-  async function GetUser(email) {
+  async function GetUser(token) {
     const res = await fetch("/api/get-user", {
       method: "POST",
       headers: {
         'Content-Type': "application/json"
       },
-      body: JSON.stringify({ email: email })
+      body: JSON.stringify({ token: token })
     })
     const data = await res.json();
     return data;
@@ -43,40 +43,35 @@ export default function Layout() {
     return data;
   }
 
-  // Set lobby code when user changes
+  // Set user info when cookie changes
   useEffect(() => {
-    if (isAuthenticated) {
-      GetUser(user.email).then(result => {
-        if (result.length > 0) {
-          setLobbyCode(result[0].lobby);
-          setUsername(result[0].username);
+    if (localStorage.getItem("usertoken")) {
+      GetUser(localStorage.getItem("usertoken")).then(result => {
+        if (result.username) {
+          console.log("user authenticated");
+          setIsAuthenticated(true);
+          setLobbyCode(result.lobby);
+          setUser({name: result.username, email: result.email});
+        }
+        else {
+          console.log("user not authenticated");
+          setIsAuthenticated(false);
+          setUser(null);
         }
       });
     }
-  }, [user]);
-
-  useEffect(() => {
-    if (isAuthenticated) {
-      GetPlayers(user.email).then(result => {
-        result.map(player => {
-          if (player.lobbycode === lobbyCode) {
-            setPlayer(player);
-          }
-        });
-      })
-    }
-  }, [lobbyCode]);
+  }, [localStorage.getItem("usertoken")]);
 
 
   return (
     <div>
-    <Navigation GetUser={GetUser} GetPlayers={GetPlayers} lobbyCode={lobbyCode} setLobbyCode={setLobbyCode} user={user} isAuthenticated={isAuthenticated} isLoading={isLoading} player={player} username={username} setUsername={setUsername}/>
+    <Navigation GetUser={GetUser} GetPlayers={GetPlayers} lobbyCode={lobbyCode} setLobbyCode={setLobbyCode} user={user} player={player} isAuthenticated={isAuthenticated}/>
       {devMode}
       <Routes>
-        <Route index element={<Home GetUser={GetUser} GetPlayers={GetPlayers} lobbyCode={lobbyCode} user={user} isAuthenticated={isAuthenticated} isLoading={isLoading} player={player} username={username}/>} />
+        <Route index element={<Home GetUser={GetUser} GetPlayers={GetPlayers} lobbyCode={lobbyCode} user={user}  player={player} isAuthenticated={isAuthenticated}/>} />
         <Route path="/lookup" element={<StockLookup />} />
         <Route path="/test2" element={<Test />} />
-        <Route path="/profile" element={<Profile user={user} isAuthenticated={isAuthenticated} isLoading={isLoading} username={username} setUsername={setUsername}/>} />
+        <Route path="/profile" element={<Profile user={user} isAuthenticated={isAuthenticated}/>} />
       </Routes>
     </div>
   )

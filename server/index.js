@@ -3,6 +3,7 @@ import express from 'express';
 import config from 'config';
 import pg from 'pg';
 import bodyParser from 'body-parser';
+import bcrypt from 'bcryptjs';
 
 const jsonparser = bodyParser.json();
 
@@ -137,7 +138,7 @@ async function changeLobby(lobbyCode, email, func) {
     client.query(`UPDATE accounts SET lobby = $1 WHERE email = $2`, [lobbyCode, email]).then(result => {
         client.end();
         func(result);
-});
+    });
 }
 
 async function joinLobby(lobbyCode, email, name, func) {
@@ -146,7 +147,7 @@ async function joinLobby(lobbyCode, email, name, func) {
     client.query(`INSERT INTO players (accountemail, lobbycode, name) VALUES ($1, $2, $3)`, [email, lobbyCode, name]).then(result => {
         client.end();
         func(result);
-});
+    });
 }
 
 async function updateUserName(email, username, func) {
@@ -165,11 +166,46 @@ async function updateUserName(email, username, func) {
     });
 }
 
+async function login(username, password, func) {
+    const client = new Client(clientConfig);
+    await client.connect();
+    client.query(`SELECT * FROM accounts WHERE username = $1`, [username]).then(result => {
+        client.end();
+        if (result.rows.length > 0) {
+            bcrypt.compare(password, result.rows[0].passwordhash, (err, res) => {
+                if (res) {
+                    func(true, result.rows[0].token);
+                }
+                else {
+                    func(false, "");
+                }
+            });
+        }
+    });
+}
+
+async function register(username, email, hash, func) {
+    const salt = await bcrypt.genSalt(10);
+    const token = await bcrypt.hash(email, salt);
+
+    if (username.length > 0 && username.length < 20) {
+        const client = new Client(clientConfig);
+        client.connect();
+        client.query(`INSERT INTO accounts (email, username, token, passwordhash) VALUES ($1, $2, $3, $4)`, [email, username, token, hash]).then(data => {
+            client.end();
+            func({ success: true, token: token });
+        });
+    }
+    else {
+        func({ success: false, message: "Username must be between 1 and 20 characters" });
+    }
+}
+
 app.post("/api/update-username", jsonparser, (req, res) => {
     const email = req.body.email;
     const username = req.body.username;
     updateUserName(email, username, result => {
-        res.send({allowed: result});
+        res.send({ allowed: result });
     });
 })
 
@@ -253,6 +289,14 @@ app.get("/api/quote", (req, res) => {
 }
 );
 
+app.post("/api/login", jsonparser, (req, res) => {
+    const username = req.body.username;
+    const password = req.body.password;
+    login(username, password, (result, token) => {
+        res.send({ success: result, token: token });
+    });
+})
+
 // Get the stock data from the API
 app.get("/api/chart", (req, res) => {
     try {
@@ -273,13 +317,13 @@ app.get("/api/chart", (req, res) => {
 
 app.post("/api/get-user", jsonparser, (req, res,) => {
     try {
-        const email = req.body.email;
-        if (email) {
+        const token = req.body.token;
+        if (token) {
             const client = new Client(clientConfig);
             client.connect();
-            client.query(`SELECT * FROM accounts WHERE email = $1`, [email]).then(data => {
+            client.query(`SELECT * FROM accounts WHERE token = $1`, [token]).then(data => {
                 client.end();
-                res.send(JSON.stringify(data.rows));
+                res.send(JSON.stringify(data.rows[0]));
             }).catch(error => {
                 console.log(error);
                 res.status(500).send(error);
@@ -291,26 +335,19 @@ app.post("/api/get-user", jsonparser, (req, res,) => {
     }
 })
 
-app.post("/api/new-user", jsonparser, (req, res) => {
+app.post("/api/register", jsonparser, (req, res) => {
     try {
         const email = req.body.email;
         const username = req.body.username;
-        if (email) {
-            const client = new Client(clientConfig);
-            client.connect();
-            client.query(`INSERT INTO accounts (email, username) VALUES ($1, $2)`, [email, username]).then(data => {
-                client.end();
-                res.send(JSON.stringify(data.rows));
-            }).catch(error => {
-                console.log(error);
-                res.status(500).send(error);
-            });
-        }
+        const hash = req.body.hash;
+        register(username, email, hash, (result) => {
+            res.send(result);
+        });
     } catch (error) {
-        console.log(error);
-        res.status(500);
+        console.log(error)
     }
-})
+});
+
 
 // Get a player name from their account email and lobby code
 app.post("/api/get-player-name", jsonparser, (req, res) => {

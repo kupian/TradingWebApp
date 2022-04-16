@@ -32,7 +32,7 @@ if (!(props.isAuthenticated)) return (<div>You are not logged in.</div>);
 return (
   <div>
     <img src={props.user.picture} alt={props.user.name} />
-    <h2>{props.username}</h2>
+    <h2>{props.user.name}</h2>
     <p>{props.user.email}</p>
 
     <Form>
